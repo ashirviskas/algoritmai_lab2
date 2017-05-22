@@ -7,7 +7,7 @@ import struct
 import string
 import multiprocessing
 
-from numpy.core.tests.test_multiarray import x
+# from numpy.core.tests.test_multiarray import x
 
 
 class Node:
@@ -603,17 +603,49 @@ def do_all(sizes_l, sizes_b, sizes_m):
     #plt.plot( CSLLF, CSLL, CSAF, CSA, SSLLF, SSLL, SSAF, SSA)
     #plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.show()
+
+def retrieve_several(students, hashtable, partsize, part):
+    start = int(len(students)*part/partsize)
+    #print("st: ", start)
+    end = int(len(students)*(part+1)/partsize)
+    #print("end: ", end)
+    for i in range(start, end):
+        hashtable.Retrieve(students[i])
+
 if __name__ == "__main__":
     processes = []
-    start = time.time()
-    hashtable = HashTable(200000)
+    print("Creating hashtable")
+    hashtable = HashTable(20000)
     students = []
-    for i in range(200000):
+    print("Inserting students")
+    for i in range(20000):
         str_temp = ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
         student = Student(str_temp)
-        students.append(student)
+        students.append(str_temp)
+        # students.append(student)
         hashtable.QuadraticHashInsert(student)
+    start = time.time()
+    print("Finding students")
+    i = 0
+    for student in students:
+        hashtable.Retrieve(student)
+        #i+=1
+        # if(i%1000 == 1):
+        #     print(i)
 
+    print("Ne paraleliai užtruko: ", time.time() - start, "s.")
+    jobs = []
+    start = time.time()
+    for i in range(0, 8):
+        proc = multiprocessing.Process(target=retrieve_several, args=(students, hashtable,8,i))
+        proc.start()
+        jobs.append(proc)
+        processes.append(proc)
+        # print(i)
+        # hashtable.Retrieve(student)
+    for job in jobs:
+        job.join()
+    print("Paraleliai užtruko: ", time.time() - start, "s.")
 
 # sizes_b = [1600, 3200, 6400, 12800, 25600, 51200, 100000, 200000, 300000] # big sizes
 # sizes_m = [2000, 4000, 6000, 8000, 12000, 13000, 14000, 30000] # medium sizes
