@@ -6,6 +6,10 @@ import matplotlib.pyplot as plt
 import struct
 import string
 import multiprocessing
+
+from numpy.core.tests.test_multiarray import x
+
+
 class Node:
     def __init__(self, value = None, next = None):
         self.value = value
@@ -599,14 +603,25 @@ def do_all(sizes_l, sizes_b, sizes_m):
     #plt.plot( CSLLF, CSLL, CSAF, CSA, SSLLF, SSLL, SSAF, SSA)
     #plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.show()
+if __name__ == "__main__":
+    processes = []
+    start = time.time()
+    hashtable = HashTable(200000)
+    students = []
+    for i in range(200000):
+        str_temp = ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
+        student = Student(str_temp)
+        students.append(student)
+        hashtable.QuadraticHashInsert(student)
 
-sizes_b = [1600, 3200, 6400, 12800, 25600, 51200, 100000, 200000, 300000] # big sizes
-sizes_m = [2000, 4000, 6000, 8000, 12000, 13000, 14000, 30000] # medium sizes
-sizes_l = [10, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500] # low sizes
-do_all(sizes_l, sizes_b, sizes_m)
-#times_f = do_hash_file(sizes_l, True, "Hashey")
-#times_nf = do_hash_file(sizes_m, False, "Hashey")
-plt.xlabel('Elementų skaičius, n')
+
+# sizes_b = [1600, 3200, 6400, 12800, 25600, 51200, 100000, 200000, 300000] # big sizes
+# sizes_m = [2000, 4000, 6000, 8000, 12000, 13000, 14000, 30000] # medium sizes
+# sizes_l = [10, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500] # low sizes
+# do_all(sizes_l, sizes_b, sizes_m)
+# #times_f = do_hash_file(sizes_l, True, "Hashey")
+# #times_nf = do_hash_file(sizes_m, False, "Hashey")
+# plt.xlabel('Elementų skaičius, n')
 """plt.ylabel('Laikas, s')
 plt.subplot(211)
 plt.plot(sizes_l, times_f, 'b-o')
