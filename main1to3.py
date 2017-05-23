@@ -612,13 +612,28 @@ def retrieve_several(students, hashtable, partsize, part):
     for i in range(start, end):
         hashtable.Retrieve(students[i])
 
+def do_parallel(students, hashtable, threads):
+    start = time.time()
+    jobs = []
+    for i in range(0, threads):
+        proc = multiprocessing.Process(target=retrieve_several, args=(students, hashtable, threads, i))
+        proc.start()
+        jobs.append(proc)
+        processes.append(proc)
+        # print(i)
+        # hashtable.Retrieve(student)
+    for job in jobs:
+        job.join()
+    print("Paraleliai užtruko: ", time.time() - start, "s.", " Su ", threads, " procesais")
+
 if __name__ == "__main__":
     processes = []
     print("Creating hashtable")
-    hashtable = HashTable(20000)
+    count = 30000
+    hashtable = HashTable(count)
     students = []
     print("Inserting students")
-    for i in range(20000):
+    for i in range(count):
         str_temp = ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
         student = Student(str_temp)
         students.append(str_temp)
@@ -634,35 +649,18 @@ if __name__ == "__main__":
         #     print(i)
 
     print("Ne paraleliai užtruko: ", time.time() - start, "s.")
-    jobs = []
-    start = time.time()
-    for i in range(0, 8):
-        proc = multiprocessing.Process(target=retrieve_several, args=(students, hashtable,8,i))
-        proc.start()
-        jobs.append(proc)
-        processes.append(proc)
-        # print(i)
-        # hashtable.Retrieve(student)
-    for job in jobs:
-        job.join()
-    print("Paraleliai užtruko: ", time.time() - start, "s.")
-
-# sizes_b = [1600, 3200, 6400, 12800, 25600, 51200, 100000, 200000, 300000] # big sizes
-# sizes_m = [2000, 4000, 6000, 8000, 12000, 13000, 14000, 30000] # medium sizes
-# sizes_l = [10, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500] # low sizes
-# do_all(sizes_l, sizes_b, sizes_m)
-# #times_f = do_hash_file(sizes_l, True, "Hashey")
-# #times_nf = do_hash_file(sizes_m, False, "Hashey")
-# plt.xlabel('Elementų skaičius, n')
-"""plt.ylabel('Laikas, s')
-plt.subplot(211)
-plt.plot(sizes_l, times_f, 'b-o')
-plt.title('Hash kvadratinės funkcijos paskutinio elemento paieškos faile laikas')
-plt.xlabel('Elementų skaičius, n')
-plt.ylabel('Laikas, s')
-plt.subplot(111)
-plt.plot(sizes_m, times_nf, 'b-o')
-plt.title('Hash kvadratinės funkcijos paskutinio elemento paieškos laikas')
-plt.xlabel('Elementų skaičius, n')
-plt.ylabel('Laikas, s')
-plt.show()"""
+    for i in range(2, 9, 1):
+        do_parallel(students, hashtable, i)
+    # jobs = []
+    # threads = 5
+    # start = time.time()
+    # for i in range(0, threads):
+    #     proc = multiprocessing.Process(target=retrieve_several, args=(students, hashtable,threads,i))
+    #     proc.start()
+    #     jobs.append(proc)
+    #     processes.append(proc)
+    #     # print(i)
+    #     # hashtable.Retrieve(student)
+    # for job in jobs:
+    #     job.join()
+    # print("Paraleliai užtruko: ", time.time() - start, "s.", " Su ", threads, " procesais")

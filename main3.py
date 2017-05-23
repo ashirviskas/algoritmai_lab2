@@ -112,9 +112,6 @@ if __name__ == "__main__":
         jobs.append(proc)
         processes.append(proc)
     unfinished = True
-    while unfinished:
-        unfinished = False
-        for job in jobs:
-            if job.is_alive():
-                unfinished = True
+    for job in jobs:
+        job.join()
     print("Paraleliai užtruko: ", time.time()-start)
