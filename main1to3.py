@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import struct
 import string
 import multiprocessing
+from multiprocessing import Pool
 
 # from numpy.core.tests.test_multiarray import x
 
@@ -629,7 +630,7 @@ def do_parallel(students, hashtable, threads):
 if __name__ == "__main__":
     processes = []
     print("Creating hashtable")
-    count = 30000
+    count = 20000
     hashtable = HashTable(count)
     students = []
     print("Inserting students")
@@ -644,13 +645,21 @@ if __name__ == "__main__":
     i = 0
     for student in students:
         hashtable.Retrieve(student)
-        #i+=1
-        # if(i%1000 == 1):
-        #     print(i)
+        i+=1
+        if(i%1000 == 1):
+            print(i)
 
     print("Ne paraleliai užtruko: ", time.time() - start, "s.")
-    for i in range(2, 9, 1):
-        do_parallel(students, hashtable, i)
+    start = time.time()
+    threads = 6
+    with Pool(threads) as pool:
+        results = pool.map(hashtable.Retrieve, students)
+    print("Paraleliai su ", threads, " threads užtruko: ", time.time() - start, "s.")
+    print("Daroma su processes:")
+    do_parallel(students, hashtable, threads)
+
+    # for i in range(8, 9, 1):
+    #     do_parallel(students, hashtable, i)
     # jobs = []
     # threads = 5
     # start = time.time()
